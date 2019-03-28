@@ -7,7 +7,7 @@ steps{
 sh '''
 su - root << EOF
 root
-git clone https://github.com/svn123/Spark_zeppelin_script.git /var/lib/jenkins/workspace/Deployment_scripts
+git clone https://github.com/svn123/Spark_zeppelin_script.git
 EOF
 '''
 }
