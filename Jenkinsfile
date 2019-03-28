@@ -7,7 +7,7 @@ steps{
 sh '''
 su - root << EOF
 root
-git clone https://github.com/conaku/HPE-EPA-Solutions.git
+git clone https://github.com/conaku/HPE-EPA-Solutions.git /var/lib/jenkins/workspace/Deployment_scripts
 EOF
 '''
 }
