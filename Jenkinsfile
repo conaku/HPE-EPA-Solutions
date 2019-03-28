@@ -7,7 +7,7 @@ steps{
 sh '''
 su - root << EOF
 root
-git clone https://github.com/svn123/Spark_zeppelin_script.git
+git clone https://github.com/conaku/HPE-EPA-Solutions
 EOF
 '''
 }
