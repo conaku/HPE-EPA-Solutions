@@ -1,0 +1,10 @@
+- name: enable cassandra now
+  service: 
+    name: cassandra
+    enabled: yes
+  when: inventory_hostname in groups['cassandra-node']
+
+
+
+
+

@@ -1,0 +1,5 @@
+- name: Zeppelin Deployment
+  hosts: all
+  remote_user: root
+  roles:
+    - role: zeppelin-deployment

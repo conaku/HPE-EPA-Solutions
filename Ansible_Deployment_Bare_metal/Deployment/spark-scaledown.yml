@@ -1,0 +1,5 @@
+- name: Spark Cluster Scaling
+  hosts: all
+  remote_user: root
+  roles:
+    - role: spark-scaledown

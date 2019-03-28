@@ -1,0 +1,8 @@
+cassandra:
+  baseurl: https://www.apache.org/dist/cassandra/redhat/311x/
+  gpgkey: https://www.apache.org/dist/cassandra/KEYS
+  repos_path: /etc/yum.repos.d/cassandra.repo
+  env_path: /etc/cassandra/default.conf/cassandra-env.sh
+
+
+

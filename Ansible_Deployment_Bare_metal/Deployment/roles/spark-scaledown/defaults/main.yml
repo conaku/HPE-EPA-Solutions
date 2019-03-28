@@ -1,0 +1,6 @@
+spark:
+   java_home: /usr/lib/jvm/java-1.8.0-openjdk
+   download_location: https://archive.apache.org/dist/spark
+   user: "spark"
+   user_shell: "/bin/false"
+   

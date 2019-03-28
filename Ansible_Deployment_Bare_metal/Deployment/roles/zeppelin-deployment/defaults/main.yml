@@ -1,0 +1,7 @@
+zeppelin:
+   version: 0.8.1
+   zeppelin_install_dir: /usr/local
+   download_location: http://mirrors.estointernet.in/apache/zeppelin
+   user: "zeppelin"
+   spark_url: spark://{{ groups['spark-master'][0] }}:7077
+   user_shell: "/bin/false"

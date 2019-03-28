@@ -1,0 +1,7 @@
+- name: Spark Cluster Deployment + Zeppelin
+  hosts: all
+  remote_user: root
+  roles:
+    - role: spark-deployment
+    - role: zeppelin-deployment
+    - role: cassandra-deployment

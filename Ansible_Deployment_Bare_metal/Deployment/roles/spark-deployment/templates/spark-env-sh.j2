@@ -1,0 +1,4 @@
+SPARK_MASTER_WEBUI_PORT={{ spark.master_ui_port }}
+export SPARK_MASTER_HOST='{{ groups['spark-master'][0] }}'
+export JAVA_HOME={{ spark.java_home }}
+

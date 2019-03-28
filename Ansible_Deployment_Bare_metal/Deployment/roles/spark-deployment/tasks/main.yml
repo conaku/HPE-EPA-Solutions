@@ -1,0 +1,63 @@
+- name: Create service account for spark
+  user: name={{ spark.user }}
+        system=yes
+        shell={{ spark.user_shell }}
+        state=present
+  when: inventory_hostname in groups['cluster-nodes']
+
+- name: Set spark installation path fact
+  set_fact: spark_installation_dir_name=spark-{{ spark_version }}-bin-hadoop{{ hadoop_version }}
+
+- name: Set spark archive fact
+  set_fact: spark_archive=spark-{{ spark_version }}-bin-hadoop{{ hadoop_version }}.tgz
+
+- name: Set spark download location fact
+  set_fact: spark_download={{ spark.download_location }}/spark-{{ spark_version }}/{{ spark_archive }}
+
+- name: create spark installation directory
+  file: 
+     path: "{{ spark_install_dir }}/{{ spark_installation_dir_name }}"
+     state: directory
+     owner: "{{ spark.user }}"
+  become: true
+  when: inventory_hostname in groups['cluster-nodes']
+
+- debug:
+     msg: "Downloading Spark from: {{ spark_download }}"
+  when: inventory_hostname in groups['jenkins-master']
+
+- name: download spark
+  get_url: url="{{ spark_download }}" dest="{{ download_temp_dir }}/{{ spark_archive }}"
+  when: inventory_hostname in groups['jenkins-master']
+
+- name: Copy the spark tar to slave machines
+  copy: 
+    src: "{{ download_temp_dir }}/{{ spark_archive }}"
+    dest: "{{ download_temp_dir }}/{{ spark_archive }}"
+    owner: spark
+    mode: 0777 
+  when: inventory_hostname in groups['cluster-nodes']
+
+- name: unarchive to the install directory
+  shell: "tar -xvf {{ download_temp_dir }}/{{ spark_archive }} --strip 1 --directory {{ spark_install_dir }}/{{ spark_installation_dir_name }}"
+  when: inventory_hostname in groups['cluster-nodes']
+
+- name: set spark-env.sh
+  template: src="spark-env-sh.j2" dest="{{ spark_install_dir }}/{{ spark_installation_dir_name }}/conf/spark-env.sh"
+  when: inventory_hostname in groups['spark-master']
+
+- name: set slaves
+  template: src="slaves.j2" dest="{{ spark_install_dir}}/{{ spark_installation_dir_name }}/conf/slaves"
+  when: inventory_hostname in groups['spark-master']
+
+- name: add spark profile to startup
+  template:
+    src: spark-profile-sh.j2
+    dest: /etc/profile.d/spark-profile.sh
+    mode: 0644
+  when: inventory_hostname in groups['cluster-nodes']
+
+- name: Start all services
+  shell: sh {{ spark_install_dir }}/{{ spark_installation_dir_name }}/sbin/start-all.sh
+  when: inventory_hostname in groups['spark-master']
+

@@ -1,0 +1,41 @@
+pipeline {
+agent none
+stages {
+stage('Git pull'){
+agent{label 'master'}
+steps{
+sh '''
+su - root << EOF
+root
+mkdir /root/Deployment_scripts
+git clone https://github.com/svn123/Spark_zeppelin_script.git /root/Depoyment_scripts
+EOF
+'''
+}
+}
+stage('Spark-Deployment'){
+agent{label 'master'}
+steps{
+ansiblePlaybook (credentialsId: '7e83e79f-c974-4de1-b4a1-ef454c987324',
+inventory: '/root/Deployment_scripts/Deployment/hosts',
+playbook: '/root/Deployment_scripts/Deployment/spark-deployment.yml')
+        	}
+    	}
+stage('Zeppelin-Deployment'){
+agent{label 'master'}
+steps{
+ansiblePlaybook (credentialsId: '7e83e79f-c974-4de1-b4a1-ef454c987324',
+inventory: '/root/Deployment_scripts/Deployment/hosts',
+playbook: '/root/Deployment_scripts/Deployment/zeppelin-deployment.yml')
+        	}
+    	}
+stage('Cassandra-Deployment'){
+agent{label 'master'}
+steps{
+ansiblePlaybook (credentialsId: '7e83e79f-c974-4de1-b4a1-ef454c987324',
+inventory: '/root/Deployment_scripts/Deployment/hosts',
+playbook: '/root/Deployment_scripts/Deployment/cassandra-deployment.yml')
+        	}
+    	}
+	}
+}

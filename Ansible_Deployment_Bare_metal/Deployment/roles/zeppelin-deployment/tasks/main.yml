@@ -1,0 +1,70 @@
+- name: Create service account for Zeppelin
+  user: name={{ zeppelin.user }}
+        system=yes
+        shell={{ zeppelin.user_shell }}
+        state=present
+  when: inventory_hostname in groups['zeppelin-node']
+
+- name: set zeppelin install fact
+  set_fact: zeppelin_installed=True
+ 
+- name: set zeppelin installation path fact
+  set_fact: zeppelin_installation_dir=zeppelin-{{ zeppelin.version }}-bin-all
+
+- name: set zeppelin archive fact
+  set_fact: zeppelin_archive=zeppelin-{{ zeppelin.version }}-bin-all.tgz
+
+- name: set zeppelin download location fact
+  set_fact: zeppelin_download={{ zeppelin.download_location }}/zeppelin-{{ zeppelin.version }}/{{ zeppelin_archive }}
+
+- name: Create install directory
+  file: 
+    path: "{{ zeppelin.zeppelin_install_dir }}/{{ zeppelin_installation_dir }}"
+    state: directory
+    owner: "{{ zeppelin.user }}"
+  when: inventory_hostname in groups['zeppelin-node']
+
+- debug:
+    msg: "Downloading zeppelin from : {{ zeppelin_download }}"
+  when: inventory_hostname in groups['jenkins-master']
+
+- name: Download zeppelin
+  get_url: url="{{ zeppelin_download }}" dest="{{ download_temp_dir }}/{{ zeppelin_archive }}"
+  when: inventory_hostname in groups['jenkins-master']
+
+- name: Copy the zeppelin tar to slave machines
+  copy:
+    src: "{{ download_temp_dir }}/{{ zeppelin_archive }}"
+    dest: "{{ download_temp_dir }}/{{ zeppelin_archive }}"
+    owner: zeppelin
+    mode: 0777
+  when: inventory_hostname in groups['zeppelin-node']
+
+- name: unarchive to the install directory
+  shell: "tar -xvf {{ download_temp_dir }}/{{ zeppelin_archive }} --strip 1 --directory {{ zeppelin.zeppelin_install_dir }}/{{ zeppelin_installation_dir }}"
+  when: inventory_hostname in groups['zeppelin-node']
+
+- name: Add zeppelin-env.sh file to zeppelin
+  template:
+    src: "zeppelin-env-sh.j2"
+    dest: "{{ zeppelin.zeppelin_install_dir }}/{{ zeppelin_installation_dir }}/conf/zeppelin-env.sh"
+  when: inventory_hostname in groups['zeppelin-node']
+
+- name: Create a logs directory for zeppelin to dump logs
+  file:
+    path: "{{ zeppelin.zeppelin_install_dir }}/{{ zeppelin_installation_dir }}/logs"
+    state: directory
+  when: inventory_hostname in groups['zeppelin-node']
+
+- name: Create a run directory for zeppelin to dump all the process ID's
+  file:
+    path: "{{ zeppelin.zeppelin_install_dir }}/{{ zeppelin_installation_dir }}/run"
+    state: directory
+  when: inventory_hostname in groups['zeppelin-node']
+
+- name: Start the zeppelin service
+  shell: "sh {{ zeppelin.zeppelin_install_dir }}/{{ zeppelin_installation_dir }}/bin/zeppelin-daemon.sh start"
+  when: inventory_hostname in groups['zeppelin-node']
+
+
+

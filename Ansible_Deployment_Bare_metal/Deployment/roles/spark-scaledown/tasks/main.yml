@@ -1,0 +1,30 @@
+- name: Set spark installation path fact
+  set_fact: spark_installation_dir_name=spark-{{ spark_version }}-bin-hadoop{{ hadoop_version }}
+
+- name: Set spark archive fact
+  set_fact: spark_archive=spark-{{ spark_version }}-bin-hadoop{{ hadoop_version }}.tgz
+
+- name: Set spark download location fact
+  set_fact: spark_download={{ spark.download_location }}/spark-{{ spark_version }}/{{ spark_archive }}
+
+- name: Stop slaves
+  shell: "sh {{ spark_install_dir }}/{{ spark_installation_dir_name }}/sbin/stop-slave.sh"
+  when: inventory_hostname in groups['remove-nodes']
+
+- name: Remove spark contents
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+     - "{{ spark_install_dir }}/{{ spark_installation_dir_name }}"
+     - "{{ download_temp_dir }}/{{ spark_archive }}"
+  when: inventory_hostname in groups['remove-nodes']
+
+- name: remove slaves from the master
+  lineinfile:
+     path: "{{ spark_install_dir }}/{{ spark_installation_dir_name }}/conf/slaves"
+     line: "{{ item }}"
+     state: absent
+  with_items:
+     - "{{ groups['remove-nodes'] }}"
+  when: inventory_hostname in groups['spark-master']

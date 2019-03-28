@@ -1,0 +1,35 @@
+- name: new file
+  copy:
+    content: ""
+    dest: "{{ cassandra.repos_path }}"
+  when: inventory_hostname in groups['cassandra-node']
+
+- name: create cassandra repo file
+  template: src="cassandra.repo.j2" dest="{{ cassandra.repos_path }}"
+  when: inventory_hostname in groups['cassandra-node']
+
+- name: install cassandra
+  yum:
+    name: cassandra
+    state: present
+  when: inventory_hostname in groups['cassandra-node']
+
+- name: echo JVM
+  shell: echo JVM_OPTS=\"\$JVM_OPTS -Djava.rmi.server.hostname={{ groups['cassandra-node'][0] }}\" >> {{ cassandra.env_path }}
+  when: inventory_hostname in groups['cassandra-node']
+
+- name: system daemon reload
+  systemd:
+    daemon_reload: yes
+  when: inventory_hostname in groups['cassandra-node']
+
+- name: start cassandra now
+  service:
+    name: cassandra
+    state: started
+  notify:
+    - enable cassandra now
+  when: inventory_hostname in groups['cassandra-node']
+
+
+

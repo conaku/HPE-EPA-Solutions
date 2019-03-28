@@ -1,0 +1,29 @@
+pipeline {
+agent none
+stages {
+stage('Spark-Deployment'){
+agent{label 'master'}
+steps{
+ansiblePlaybook (credentialsId: 'b0f912ef-71fa-4c33-b24e-a6c1cd3ee978',
+inventory: '/var/lib/jenkins/workspace/Deployment_scripts/Deployment/hosts',
+playbook: '/var/lib/jenkins/workspace/Deployment_scripts/Deployment/spark-deployment.yml')
+        	}
+    	}
+stage('Zeppelin-Deployment'){
+agent{label 'master'}
+steps{
+ansiblePlaybook (credentialsId: 'b0f912ef-71fa-4c33-b24e-a6c1cd3ee978',
+inventory: '/var/lib/jenkins/workspace/Deployment_scripts/Deployment/hosts',
+playbook: '/var/lib/jenkins/workspace/Deployment_scripts/Deployment/zeppelin-deployment.yml')
+        	}
+    	}
+stage('Cassandra-Deployment'){
+agent{label 'master'}
+steps{
+ansiblePlaybook (credentialsId: 'b0f912ef-71fa-4c33-b24e-a6c1cd3ee978',
+inventory: '/var/lib/jenkins/workspace/Deployment_scripts/Deployment/hosts',
+playbook: '/var/lib/jenkins/workspace/Deployment_scripts/Deployment/cassandra-deployment.yml')
+        	}
+    	}
+	}
+}

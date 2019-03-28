@@ -1,0 +1,5 @@
+- name: cassandra Deployment 
+  hosts: all
+  remote_user: root
+  roles:
+    - role: cassandra-deployment
