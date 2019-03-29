@@ -5,7 +5,7 @@ pipeline {
             agent{label 'spark_master'}
             steps{
             sh 'mkdir /root/scripts'    
-            sh 'git clone https://github.com/svn123/Spark_zeppelin_script.git /root/scripts'
+            sh 'git clone https://github.com/conaku/HPE-EPA-Solutions  /root/scripts'
             sh 'sh /root/scripts/config_master.sh 15.213.95.216 9092 2 15.213.95.217 15.213.95.218'
             }
         }
@@ -15,7 +15,7 @@ pipeline {
                 agent{label 'spark_slave1'}
                 steps{
                 sh 'mkdir /root/scripts'    
-                sh 'git clone https://github.com/svn123/Spark_zeppelin_script.git /root/scripts'
+                sh 'git clone https://github.com/conaku/HPE-EPA-Solutions  /root/scripts'
                 sh 'sh /root/scripts/config_slave.sh'
                 }
             }
@@ -23,7 +23,7 @@ pipeline {
                 agent{label 'spark_slave2'}
                 steps{
                 sh 'mkdir /root/scripts'    
-                sh 'git clone https://github.com/svn123/Spark_zeppelin_script.git /root/scripts'
+                sh 'git clone https://github.com/conaku/HPE-EPA-Solutions  /root/scripts'
                 sh 'sh /root/scripts/config_slave.sh'
                 }
             }
