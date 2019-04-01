@@ -1,0 +1,75 @@
+// Description
+// This is a Jenkinsfile that deployes the cluster services.
+// It will run the shell scripts in the appropriate jenkins slave nodes and deployes the services.
+
+pipeline {
+    agent none
+    stages {
+        // This stage will deploy spark master service on the node labeled spark_master in jenkins master and takes the
+        // corresponding IP address and web-ui port as input.
+        stage('Install Spark Master instance'){
+            agent{label 'spark_master'}
+            steps{
+            sh 'mkdir /root/scripts'    
+            sh 'touch /root/slaves'
+            sh 'echo 15.213.95.217 >> /root/slaves'
+            sh 'echo 15.213.95.218 >> /root/slaves'
+            sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
+            sh 'sh /root/scripts/shell_script_deployment/spark_master_configure.sh 15.213.95.216 9092'
+            }
+        }
+        
+        // This stage will deploy the spark slave services on various nodes.
+        stage('Install Spark Slave instances'){
+        parallel{
+            // This stage will deploy the spark slave service on node labeled spark_slave1 in Jenkins master
+            stage('Install an instance of Spark Slave'){
+                agent{label 'spark_slave1'}
+                steps{
+                sh 'mkdir /root/scripts'    
+                sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
+                sh 'sh /root/scripts/shell_script_deployment/spark_slave_configure.sh'
+                }
+            }
+            
+            // This stage will deploy the spark slave service on node labeled spark_slave2 in Jenkins master
+            stage('Install an instance of Spark Slave'){
+                agent{label 'spark_slave2'}
+                steps{
+                sh 'mkdir /root/scripts'    
+                sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
+                sh 'sh /root/scripts/shell_script_deployment/spark_slave_configure.sh'
+                }
+            }
+        }
+        }
+        
+        // This stage will start the spark cluster services.
+        stage('Start the Spark cluster'){
+            agent{label 'spark_master'}
+            steps{
+                sh 'sh /root/scripts/shell_script_deployment/spark_cluster_start.sh'
+            }
+        }
+        
+        // This stage will install the zeppelin notebook on the node labeled spark_master in Jenkins master and takes the 
+        // spark master url as input.
+        stage('Install zeppelin notebook for Spark cluster'){
+            agent{label 'spark_master'}
+            steps{
+                sh 'sh /root/scripts/shell_script_deployment/zeppelin_install.sh spark://15.213.95.216:7077'
+            }
+        }
+        
+        // This stage will install Cassandra DB on the node labeled spark_master in Jenkins master and takes the 
+        // corresponding IP address as input
+        stage('Insatll Cassandra DB'){
+            agent{label 'spark_master'}
+            steps{
+                sh 'sh /root/scripts/shell_script_deployment/cassandra_install.sh 15.213.95.216'
+            }
+        }
+        
+        
+    }
+}
