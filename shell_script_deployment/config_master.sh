@@ -1,13 +1,22 @@
 #!/bin/bash
-#Variable declaration
-#default spark webui port is 8080
-scala_version=2.11.8
-spark_version=spark-2.4.0
-hadoop_version=2.7
-installation_directory=/usr/local
-spark_webui_port=$2
-spark_master_IP=$1
-java_home=/usr/lib/jvm/java-1.8.0-openjdk
+
+# Description:
+# This script will install and configure Spark Master
+# Spark Version is 2.4.0
+# This file takes 2 parameters to configure the spark master, those are spark master IP(1 par) and spark web ui port(2par)
+
+# Variable declaration
+# Default spark webui port is 8080
+SCALA_VERSION=2.11.8
+SPARK_VERSION=spark-2.4.0
+HADOOP_VERSION=2.7
+INSTALLATION_DIRECTORY=/usr/local
+SPARK_WEBUI_PORT=$2
+SPARK_MASTER_IP=$1
+SCALA_DOWNLOAD_URL=http://downloads.lightbend.com/scala
+SPARK_DOWNLOAD_URL=http://www-us.apache.org/dist/spark
+SPARK_HOME=$INSTALLATION_DIRECTORY/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION
+JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
 #set the java home according to the version installed in system
 
 #Check for the pre-requisites
@@ -22,16 +31,16 @@ else
 fi
 
 cd /root
-scala -version || wget http://downloads.lightbend.com/scala/$scala_version/scala-$scala_version.rpm 
-scala -version || yum install -y scala-$scala_version.rpm
+scala -version || wget $SCALA_DOWNLOAD_URL/$SCALA_VERSION/scala-$SCALA_VERSION.rpm 
+scala -version || yum install -y scala-$SCALA_VERSION.rpm
 
 #download the latest version of spark
-ls /root/$spark_version-bin-hadoop$hadoop_version.tgz 
+ls /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz 
 if [[ $? -ne 0 ]]
 then 
    cd /root
-   wget http://www-us.apache.org/dist/spark/$spark_version/$spark_version-\
-bin-hadoop$hadoop_version.tgz 
+   wget $SPARK_DOWNLOAD_URL/$SPARK_VERSION/$SPARK_VERSION-\
+bin-hadoop$HADOOP_VERSION.tgz 
    echo 'spark tar downloaded to the root directory'
 else
    echo 'Spark tar file already downloaded'
@@ -40,35 +49,27 @@ fi
 #Push the tgz spark file to slave machines
 for (( i=4; i<$3+4; i++))
 do
- scp /root/$spark_version-bin-hadoop$hadoop_version.tgz ${!i}:/root/
+ scp /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz ${!i}:/root/
 done
 
 #untar the file
-tar xvf /root/$spark_version-bin-hadoop$hadoop_version.tgz -C $installation_directory
+tar xvf /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz -C $INSTALLATION_DIRECTORY
 
 #Edit the ~/.bash_profile file
-echo "export PATH=$PATH:$installation_directory/$spark_version-bin-hadoop$hadoop_version/bin" >> ~/.bash_profile
+echo "export PATH=$PATH:$INSTALLATION_DIRECTORY/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION/bin" >> ~/.bash_profile
 source ~/.bash_profile
 
 #Spark Master configuration
-cd $installation_directory/$spark_version-bin-hadoop$hadoop_version
-cp ./conf/spark-env.sh.template ./conf/spark-env.sh
-chmod 777 ./conf/spark-env.sh
-echo "SPARK_MASTER_WEBUI_PORT=$spark_webui_port" >> ./conf/spark-env.sh
-echo "export SPARK_MASTER_HOST='$spark_master_IP'" >> ./conf/spark-env.sh
-echo "export JAVA_HOME=$java_home" >> ./conf/spark-env.sh
+cp $SPARK_HOME/conf/spark-env.sh.template $SPARK_HOME/conf/spark-env.sh
+chmod 750 $SPARK_HOME/conf/spark-env.sh
+echo "SPARK_MASTER_WEBUI_PORT=$SPARK_WEBUI_PORT" >> $SPARK_HOME/conf/spark-env.sh
+echo "export SPARK_MASTER_HOST='$SPARK_MASTER_IP'" >> $SPARK_HOME/conf/spark-env.sh
+echo "export JAVA_HOME=$JAVA_HOME" >> $SPARK_HOME/conf/spark-env.sh
 #add the java path according to your environment
 
 #Add the slaves to the slaves file in master machine configuration
-cp ./conf/slaves.template ./conf/slaves
-chmod 777 ./conf/slaves
-sed -i '/localhost/d' ./conf/slaves
-echo '' >> ./conf/slaves
-j=0
-for (( i=4; i<$3+4; i++ ))
-do
-   echo ${!i} >> ./conf/slaves
-   echo "The slave  ${!i} added to the slaves file"
-done
+cp /root/slaves $SPARK_HOME/conf/slaves
+chmod 750 $SPARK_HOME/conf/slaves
+
 
 
