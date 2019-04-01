@@ -15,7 +15,7 @@ pipeline {
             sh 'echo 15.213.95.217 >> /root/slaves'
             sh 'echo 15.213.95.218 >> /root/slaves'
             sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
-            sh 'sh /root/scripts/shell_script_deployment/spark_master_configure.sh 15.213.95.216 9092'
+            sh 'sh /root/scripts/jenkins_deploy_without_ansible/spark_master_configure.sh 15.213.95.216 9092'
             }
         }
         
@@ -28,7 +28,7 @@ pipeline {
                 steps{
                 sh 'mkdir /root/scripts'    
                 sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
-                sh 'sh /root/scripts/shell_script_deployment/spark_slave_configure.sh'
+                sh 'sh /root/scripts/jenkins_deploy_without_ansible/spark_slave_configure.sh'
                 }
             }
             
@@ -38,7 +38,7 @@ pipeline {
                 steps{
                 sh 'mkdir /root/scripts'    
                 sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
-                sh 'sh /root/scripts/shell_script_deployment/spark_slave_configure.sh'
+                sh 'sh /root/scripts/jenkins_deploy_without_ansible/spark_slave_configure.sh'
                 }
             }
         }
@@ -48,7 +48,7 @@ pipeline {
         stage('Start the Spark cluster'){
             agent{label 'spark_master'}
             steps{
-                sh 'sh /root/scripts/shell_script_deployment/spark_cluster_start.sh'
+                sh 'sh /root/scripts/jenkins_deploy_without_ansible/spark_cluster_start.sh'
             }
         }
         
@@ -57,7 +57,7 @@ pipeline {
         stage('Install zeppelin notebook for Spark cluster'){
             agent{label 'spark_master'}
             steps{
-                sh 'sh /root/scripts/shell_script_deployment/zeppelin_install.sh spark://15.213.95.216:7077'
+                sh 'sh /root/scripts/jenkins_deploy_without_ansible/zeppelin_install.sh spark://15.213.95.216:7077'
             }
         }
         
@@ -66,7 +66,7 @@ pipeline {
         stage('Insatll Cassandra DB'){
             agent{label 'spark_master'}
             steps{
-                sh 'sh /root/scripts/shell_script_deployment/cassandra_install.sh 15.213.95.216'
+                sh 'sh /root/scripts/jenkins_deploy_without_ansible/cassandra_install.sh 15.213.95.216'
             }
         }
         
