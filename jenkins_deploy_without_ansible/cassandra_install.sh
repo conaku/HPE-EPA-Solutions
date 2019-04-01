@@ -15,7 +15,7 @@ touch /etc/yum.repos.d/cassandra.repo
 cd /etc/yum.repos.d
 echo '[cassandra-3.11.4]' >> cassandra.repo
 echo 'name=Apache Cassandra' >> cassandra.repo
-echo 'baseurl=$CASSANDRA_REPO_URL' >> cassandra.repo
+echo "baseurl=$CASSANDRA_REPO_URL" >> cassandra.repo
 
 #Install Cassandra DB
 yum -y install cassandra
