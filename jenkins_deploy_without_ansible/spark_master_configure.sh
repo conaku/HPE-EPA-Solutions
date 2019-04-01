@@ -68,7 +68,7 @@ echo "export JAVA_HOME=$JAVA_HOME" >> $SPARK_HOME/conf/spark-env.sh
 #add the java path according to your environment
 
 # Add the slaves to the slaves file in master machine configuration
-cp /root/slaves $SPARK_HOME/conf/slaves
+cp /root/scripts/slaves $SPARK_HOME/conf/slaves
 chmod 750 $SPARK_HOME/conf/slaves
 
 
