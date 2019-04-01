@@ -23,7 +23,7 @@ pipeline {
         stage('Install Spark Slave instances'){
         parallel{
             // This stage will deploy the spark slave service on node labeled spark_slave1 in Jenkins master
-            stage('Install an instance of Spark Slave'){
+            stage('Install an instance of Spark Slave1'){
                 agent{label 'spark_slave1'}
                 steps{
                 sh 'mkdir /root/scripts'    
@@ -33,7 +33,7 @@ pipeline {
             }
             
             // This stage will deploy the spark slave service on node labeled spark_slave2 in Jenkins master
-            stage('Install an instance of Spark Slave'){
+            stage('Install an instance of Spark Slave2'){
                 agent{label 'spark_slave2'}
                 steps{
                 sh 'mkdir /root/scripts'    
