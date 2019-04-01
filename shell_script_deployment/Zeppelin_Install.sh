@@ -1,43 +1,48 @@
 #!/bin/bash
 
-#Varaible declaration
-spark_url=$1
-zeppelin_version=zeppelin-0.8.1
-spark_install_directory=/usr/local
-spark_version=spark-2.4.0
-hadoop_version=2.7
-spark_home=$spark_install_directory/$spark_version-bin-hadoop$hadoop_version
-zeppelin_install_directory=/usr/local
+# Description:
+# This script will install Zeppelin notebook configured for the spark cluster
+# Zeppelin Version is 0.8.1
+# Zeppelin will be installed on the spark master 
+# This script will take spark master url as a paramter 
+# If Zeppelin has to be installed on some other machine, then the label in the Jenkinsfile has to be taken care accordingly
 
+# Varaible declaration
+SPARK_URL=$1
+ZEPPELIN_VERSION=zeppelin-0.8.1
+SPARK_INSTALL_DIRECTORY=/usr/local
+SPARK_VERSION=spark-2.4.0
+HADOOP_VERSION=2.7
+SPARK_HOME=$spark_install_directory/$spark_version-bin-hadoop$hadoop_version
+ZEPPELIN_INSTALL_DIRECTORY=/usr/local
+ZEPPELIN_DOWNLOAD_URL=http://mirrors.estointernet.in/apache/zeppelin
+ZEPPELIN_HOME=$ZEPPELIN_INSTALL_DIRECTORY/$ZEPPELIN_VERSION-bin-all
 
-#Download zeppelin if it doesn't exists
-ls /root/$zeppelin_version-bin-all.tgz
+# Download zeppelin if it doesn't exists
+ls /root/$ZEPPELIN_VERSION-bin-all.tgz
 if [[ $? -ne 0 ]]
 then
    cd /root
-   wget http://mirrors.estointernet.in/apache/zeppelin/$zeppelin_version/$zeppelin_version-bin-all.tgz
+   wget $ZEPPELIN_DOWNLOAD_URL/$ZEPPELIN_VERSION/$ZEPPELIN_VERSION-bin-all.tgz
    echo 'Zeppelin Downloaded'
 else
    echo 'Zeppelin Already present from the first build'
 fi
 
-#untar the zeppelin notebook
-tar xvf /root/$zeppelin_version-bin-all.tgz -C $zeppelin_install_directory
+# untar the zeppelin notebook
+tar xvf /root/$ZEPPELIN_VERSION-bin-all.tgz -C $ZEPPELIN_INSTALL_DIRECTORY
 
-#Configure the spark master url for the zeppelin
-cd $zeppelin_install_directory/$zeppelin_version-bin-all
-cp ./conf/zeppelin-env.sh.template ./conf/zeppelin-env.sh
-chmod 777 ./conf/zeppelin-env.sh
-echo "export MASTER=$spark_url" >> ./conf/zeppelin-env.sh
-echo "export SPARK_HOME=$spark_home" >> ./conf/zeppelin-env.sh
+# Configure the spark master url for the zeppelin notebook
+cp $ZEPPELIN_HOME/conf/zeppelin-env.sh.template $ZEPPELIN_HOME/conf/zeppelin-env.sh
+chmod 750 ZEPPELIN_HOME/conf/zeppelin-env.sh
+echo "export MASTER=$SPARK_URL" >> $ZEPPELIN_HOME/conf/zeppelin-env.sh
+echo "export SPARK_HOME=$SPARK_HOME" >> $ZEPPELIN_HOME/conf/zeppelin-env.sh
 
-#Create logs directory for storing all zeppelin logs
-#Create run directory for storing the process IDs
-mkdir logs
-mkdir run
+# Create logs directory for storing all zeppelin logs
+# Create run directory for storing the process IDs
+mkdir $ZEPPELIN_HOME/logs
+mkdir $ZEPPELIN_HOME/run
 
-#start the zeppelin daemon
-su - root << EOF
-cd $zeppelin_install_directory/$zeppelin_version-bin-all
-./bin/zeppelin-daemon.sh start
-EOF
+# start the zeppelin daemon
+$ZEPPELIN_HOME/bin/zeppelin-daemon.sh start &
+
