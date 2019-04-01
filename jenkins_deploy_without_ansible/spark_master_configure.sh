@@ -47,10 +47,10 @@ else
 fi 
 
 # Push the tgz spark file to slave machines
-for (( i=4; i<$3+4; i++))
+while read line
 do
- scp /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz ${!i}:/root/
-done
+ scp /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz $line:/root/
+done < /root/slaves
 
 # untar the file
 tar xvf /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz -C $INSTALLATION_DIRECTORY
