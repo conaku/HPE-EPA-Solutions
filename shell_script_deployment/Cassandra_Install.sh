@@ -1,15 +1,21 @@
 #!/bin/bash
 
-#Create a Repo file for Cassandra installation
+# Description:
+# This script will install Cassandra DB 
+# Cassandra version is 3.11.4
+# Cassandra will be installed on the spark master, so this script takes a IP address of spark master as a parameter
+# If Cassandra has to be installed on some other machine, then the label in the jenkinsfile has to be taken care accordingly
+
+# Cassandra repo URL
+CASSANDRA_REPO_URL=https://www.apache.org/dist/cassandra/redhat/311x/
+
+# Create a Repo file for Cassandra installation
 cd /root
 touch /etc/yum.repos.d/cassandra.repo
 cd /etc/yum.repos.d
-echo '[cassandra]' >> cassandra.repo
+echo '[cassandra-3.11.4]' >> cassandra.repo
 echo 'name=Apache Cassandra' >> cassandra.repo
-echo 'baseurl=https://www.apache.org/dist/cassandra/redhat/311x/' >> cassandra.repo
-echo 'gpgcheck=1' >> cassandra.repo
-echo 'repo_gpgcheck=1' >> cassandra.repo
-echo 'gpgkey=https://www.apache.org/dist/cassandra/KEYS' >> cassandra.repo
+echo 'baseurl=$CASSANDRA_REPO_URL' >> cassandra.repo
 
 #Install Cassandra DB
 yum -y install cassandra
