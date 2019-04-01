@@ -17,9 +17,9 @@ SCALA_DOWNLOAD_URL=http://downloads.lightbend.com/scala
 SPARK_DOWNLOAD_URL=http://www-us.apache.org/dist/spark
 SPARK_HOME=$INSTALLATION_DIRECTORY/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION
 JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
-#set the java home according to the version installed in system
+# set the java home according to the version installed in system
 
-#Check for the pre-requisites
+# Check for the pre-requisites
 yum install -y wget
 java -version || yum install -y java-1.8.0-openjdk-devel
 if [[ $? -ne 0 ]]
@@ -34,7 +34,7 @@ cd /root
 scala -version || wget $SCALA_DOWNLOAD_URL/$SCALA_VERSION/scala-$SCALA_VERSION.rpm 
 scala -version || yum install -y scala-$SCALA_VERSION.rpm
 
-#download the latest version of spark
+# download the latest version of spark
 ls /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz 
 if [[ $? -ne 0 ]]
 then 
@@ -46,20 +46,20 @@ else
    echo 'Spark tar file already downloaded'
 fi 
 
-#Push the tgz spark file to slave machines
+# Push the tgz spark file to slave machines
 for (( i=4; i<$3+4; i++))
 do
  scp /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz ${!i}:/root/
 done
 
-#untar the file
+# untar the file
 tar xvf /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz -C $INSTALLATION_DIRECTORY
 
-#Edit the ~/.bash_profile file
+# Edit the ~/.bash_profile file
 echo "export PATH=$PATH:$INSTALLATION_DIRECTORY/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION/bin" >> ~/.bash_profile
 source ~/.bash_profile
 
-#Spark Master configuration
+# Spark Master configuration
 cp $SPARK_HOME/conf/spark-env.sh.template $SPARK_HOME/conf/spark-env.sh
 chmod 750 $SPARK_HOME/conf/spark-env.sh
 echo "SPARK_MASTER_WEBUI_PORT=$SPARK_WEBUI_PORT" >> $SPARK_HOME/conf/spark-env.sh
@@ -67,7 +67,7 @@ echo "export SPARK_MASTER_HOST='$SPARK_MASTER_IP'" >> $SPARK_HOME/conf/spark-env
 echo "export JAVA_HOME=$JAVA_HOME" >> $SPARK_HOME/conf/spark-env.sh
 #add the java path according to your environment
 
-#Add the slaves to the slaves file in master machine configuration
+# Add the slaves to the slaves file in master machine configuration
 cp /root/slaves $SPARK_HOME/conf/slaves
 chmod 750 $SPARK_HOME/conf/slaves
 
