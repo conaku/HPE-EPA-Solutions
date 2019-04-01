@@ -34,7 +34,7 @@ tar xvf /root/$ZEPPELIN_VERSION-bin-all.tgz -C $ZEPPELIN_INSTALL_DIRECTORY
 
 # Configure the spark master url for the zeppelin notebook
 cp $ZEPPELIN_HOME/conf/zeppelin-env.sh.template $ZEPPELIN_HOME/conf/zeppelin-env.sh
-chmod 750 ZEPPELIN_HOME/conf/zeppelin-env.sh
+chmod 750 $ZEPPELIN_HOME/conf/zeppelin-env.sh
 echo "export MASTER=$SPARK_URL" >> $ZEPPELIN_HOME/conf/zeppelin-env.sh
 echo "export SPARK_HOME=$SPARK_HOME" >> $ZEPPELIN_HOME/conf/zeppelin-env.sh
 
