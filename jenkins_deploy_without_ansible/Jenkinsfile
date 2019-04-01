@@ -16,6 +16,7 @@ pipeline {
             sh 'echo 15.213.95.218 >> /root/slaves'
             sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
             sh 'sh /root/scripts/jenkins_deploy_without_ansible/spark_master_configure.sh 15.213.95.216 9092'
+            sh 'rm -rf /root/slaves'
             }
         }
         
