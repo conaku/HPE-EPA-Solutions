@@ -50,7 +50,7 @@ fi
 while read line
 do
  scp /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz $line:/root/
-done < /root/slaves
+done < /root/scripts/slaves
 
 # untar the file
 tar xvf /root/$SPARK_VERSION-bin-hadoop$HADOOP_VERSION.tgz -C $INSTALLATION_DIRECTORY
