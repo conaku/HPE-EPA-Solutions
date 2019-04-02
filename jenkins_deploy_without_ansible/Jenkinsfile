@@ -7,14 +7,18 @@ pipeline {
     stages {
         // This stage will deploy spark master service on the node labeled spark_master in jenkins master and takes the
         // corresponding IP address and web-ui port as input.
+        def ip_adrrs = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
         stage('Install Spark Master instance'){
             agent{label 'spark_master'}
             steps{
             sh 'mkdir /root/scripts'    
             sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
             sh 'touch /root/scripts/slaves'
-            sh 'echo 15.213.95.217 >> /root/scripts/slaves'
-            sh 'echo 15.213.95.218 >> /root/scripts/slaves'
+            keys = ip_adrrs.keySet();
+            for(String key in keys){
+                def ip = ip_adrrs.get(key);
+                sh "echo ${ip} >> /root/scripts/slaves"
+                }
             sh 'sh /root/scripts/jenkins_deploy_without_ansible/spark_master_configure.sh 15.213.95.216 9092'
             sh 'rm -rf /root/scripts/slaves'
             }
