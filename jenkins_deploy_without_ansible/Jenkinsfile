@@ -3,13 +3,16 @@
 // It will run the shell scripts in the appropriate jenkins slave nodes and deployes the services.
 
 // Slave IP address
-def ip_adrrs = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
+def IP_ADDRS = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
+def SPARK_MASTER_IP = 15.213.95.216
+def SPARK_MASTER_URL= "spark://${SPARK_MASTER_IP}:7077"
+def SPARK_WEB_UI_PORT = 9092
 
 // Function that will add the IP address to slaves file
-def create_slaves_file(ip_adrrs){
-keys = ip_adrrs.keySet();
+def create_slaves_file(IP_ADDRS){
+keys = IP_ADDRS.keySet();
 for(String key in keys){
-def ip = ip_adrrs.get(key);
+def ip = IP_ADDRS.get(key);
 sh "echo ${ip} >> /root/scripts/slaves"
      }
 }
@@ -25,8 +28,8 @@ pipeline {
             sh 'mkdir /root/scripts'    
             sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
             sh 'touch /root/scripts/slaves'
-            create_slaves_file(ip_adrrs)  
-            sh 'sh /root/scripts/jenkins_deploy_without_ansible/spark_master_configure.sh 15.213.95.216 9092'
+            create_slaves_file(IP_ADDRS)  
+                 sh "sh /root/scripts/jenkins_deploy_without_ansible/spark_master_configure.sh ${SPARK_MASTER_IP} ${SPARK_WEB_UI_PORT}"
             sh 'rm -rf /root/scripts/slaves'
             }
         }
@@ -69,7 +72,7 @@ pipeline {
         stage('Install zeppelin notebook for Spark cluster'){
             agent{label 'spark_master'}
             steps{
-                sh 'sh /root/scripts/jenkins_deploy_without_ansible/zeppelin_install.sh spark://15.213.95.216:7077'
+                 sh "sh /root/scripts/jenkins_deploy_without_ansible/zeppelin_install.sh ${SPARK_MASTER_URL}"
             }
         }
         
@@ -78,7 +81,7 @@ pipeline {
         stage('Insatll Cassandra DB'){
             agent{label 'spark_master'}
             steps{
-                sh 'sh /root/scripts/jenkins_deploy_without_ansible/cassandra_install.sh 15.213.95.216'
+                 sh "sh /root/scripts/jenkins_deploy_without_ansible/cassandra_install.sh ${SPARK_MASTER_IP}"
             }
         }
         
