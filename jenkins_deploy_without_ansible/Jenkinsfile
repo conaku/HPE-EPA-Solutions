@@ -1,10 +1,9 @@
 // Description
 // This is a Jenkinsfile that deployes the cluster services.
 // It will run the shell scripts in the appropriate jenkins slave nodes and deployes the services.
-
+def ip_adrrs = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
 pipeline {
     agent none
-    ip_adrrs = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
     stages {
         // This stage will deploy spark master service on the node labeled spark_master in jenkins master and takes the
         // corresponding IP address and web-ui port as input.
