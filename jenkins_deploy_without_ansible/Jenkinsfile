@@ -7,7 +7,7 @@ pipeline {
     stages {
         // This stage will deploy spark master service on the node labeled spark_master in jenkins master and takes the
         // corresponding IP address and web-ui port as input.
-        def ip_adrrs = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
+        ip_adrrs = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
         stage('Install Spark Master instance'){
             agent{label 'spark_master'}
             steps{
