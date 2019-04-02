@@ -1,8 +1,11 @@
 // Description
 // This is a Jenkinsfile that deployes the cluster services.
 // It will run the shell scripts in the appropriate jenkins slave nodes and deployes the services.
+
+// Slave IP address
 def ip_adrrs = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
 
+// Function that will add the IP address to slaves file
 def create_slaves_file(ip_adrrs){
 keys = ip_adrrs.keySet();
 for(String key in keys){
@@ -10,6 +13,7 @@ def ip = ip_adrrs.get(key);
 sh "echo ${ip} >> /root/scripts/slaves"
      }
 }
+
 pipeline {
     agent none
     stages {
