@@ -19,7 +19,12 @@ echo "baseurl=$CASSANDRA_REPO_URL" >> cassandra.repo
 
 #Install Cassandra DB
 yum -y install cassandra
-echo JVM_OPTS=\"\$JVM_OPTS -Djava.rmi.server.hostname=$1\" >> /etc/cassandra/default.conf/cassandra-env.sh
+
+#Edit the cassandra.yaml file for setting the IPAddress instead of localhost or loopback address
+sed -i "s/listen_address: localhost/listen_address: $1/g" /etc/cassandra/conf/cassandra.yaml
+sed -i "s/rpc_address: localhost/rpc_address: $1/g" /etc/cassandra/conf/cassandra.yaml
+sed -i 's/- seeds: "127.0.0.1"/- seeds: '$1'/g' /etc/cassandra/conf/cassandra.yaml
+
 
 #start and enable the cassandra DB
 systemctl daemon-reload
