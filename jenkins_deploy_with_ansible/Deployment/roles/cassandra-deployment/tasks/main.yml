@@ -14,8 +14,25 @@
     state: present
   when: inventory_hostname in groups['cassandra-node']
 
-- name: echo JVM
-  shell: echo JVM_OPTS=\"\$JVM_OPTS -Djava.rmi.server.hostname={{ groups['cassandra-node'][0] }}\" >> {{ cassandra.env_path }}
+- name: Replace the listen_address value to Cassandra IP address
+  lineinfile:
+     dest: "{{ cassandra.yml_file }}"
+     regexp: '^listen_address: (.*)$'
+     line: "listen_address: {{ groups['cassandra-node'][0] }}"
+  when: inventory_hostname in groups['cassandra-node']
+  
+- name: Replace the rpc_address value to Cassandra IP address
+  lineinfile:
+     dest: "{{ cassandra.yml_file }}"
+     regexp: '^rpc_address: (.*)$'
+     line: "rpc_address: {{ groups['cassandra-node'][0] }}"
+  when: inventory_hostname in groups['cassandra-node']
+
+- name: Replace the seeds value to Cassandra IP address
+  lineinfile:
+     dest: "{{ cassandra.yml_file }}"
+     regexp: '^(.*)- seeds: (.*)$'
+     line: "          - seeds: {{ groups['cassandra-node'][0] }}"
   when: inventory_hostname in groups['cassandra-node']
 
 - name: system daemon reload
