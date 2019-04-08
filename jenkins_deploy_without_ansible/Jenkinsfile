@@ -17,23 +17,23 @@ sh "echo ${ip} >> /root/scripts/slaves"
 }
 
 // Function to transfer the customised artifacts to slaves
-def transfer_artifacts(IP_ADDRS){
+def transfer_artifacts(IP_ADDRS,SPARK_MASTER_IP){
 keys = IP_ADDRS.keySet();
 for(String key in keys){
 def ip = IP_ADDRS.get(key);
-sh '''
+sh """
 su - root << EOF
 root
-scp -r /var/lib/jenkins/workspace/Deployment_scripts/jenkins_deploy_without_ansible ${ip}:/root/scripts
+scp -r /var/lib/jenkins/workspace/Deployment_scripts ${ip}:/root/scripts
 EOF
-'''
+"""
      }
-su '''
+su """
 su - root << EOF
 root
-scp -r /var/lib/jenkins/workspace/Deployment_scripts/jenkins_deploy_without_ansible ${SPARK_MASTER_IP}:/root/scripts
+scp -r /var/lib/jenkins/workspace/Deployment_scripts ${SPARK_MASTER_IP}:/root/scripts
 EOF
-'''
+"""
 }
 
 pipeline {
@@ -44,7 +44,7 @@ pipeline {
          stage('Transfer the artifacts'){
             agent{label 'master'}
             steps{
-            transfer_artifacts(IP_ADDRS)
+            transfer_artifacts(IP_ADDRS,SPARK_MASTER_IP)
             }
         }
         // This stage will deploy spark master service on the node labeled spark_master in jenkins master and takes the
