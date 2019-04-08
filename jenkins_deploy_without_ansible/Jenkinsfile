@@ -7,7 +7,6 @@ def IP_ADDRS = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
 def SPARK_MASTER_IP = '15.213.95.216'
 def SPARK_MASTER_URL= "spark://${SPARK_MASTER_IP}:7077"
 def SPARK_WEB_UI_PORT = 9092
-
 // Function that will add the IP address to slaves file
 def create_slaves_file(IP_ADDRS){
 keys = IP_ADDRS.keySet();
@@ -24,18 +23,25 @@ for(String key in keys){
 def ip = IP_ADDRS.get(key);
 sh "scp -r /var/lib/jenkins/workspace/Deployment_scripts/jenkins_deploy_without_ansible ${ip}:/root/scripts"
      }
+sh "scp -r /var/lib/jenkins/workspace/Deployment_scripts/jenkins_deploy_without_ansible ${SPARK_MASTER_IP}:/root/scripts"
 }
 
 pipeline {
     agent none
     stages {
+         // This stage will transfer all the artifacts that has been downloaded and modified from jenkins master to
+         // jenkins slaves.
+         stage('Transfer the artifacts'){
+            agent{label 'master'}
+            steps{
+            transfer_artifacts(IP_ADDRS)
+            }
+        }
         // This stage will deploy spark master service on the node labeled spark_master in jenkins master and takes the
         // corresponding IP address and web-ui port as input.
         stage('Install Spark Master instance'){
             agent{label 'spark_master'}
             steps{
-            sh 'mkdir /root/scripts'    
-            sh 'cp /var/lib/jenkins/workspace/Deployment_scripts/jenkins_deploy_without_ansible /root/scripts'
             sh 'touch /root/scripts/slaves'
             create_slaves_file(IP_ADDRS)  
             sh "sh /root/scripts/jenkins_deploy_without_ansible/spark_master_configure.sh ${SPARK_MASTER_IP} ${SPARK_WEB_UI_PORT}"
