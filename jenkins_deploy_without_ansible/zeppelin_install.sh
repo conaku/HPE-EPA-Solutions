@@ -17,6 +17,7 @@ SPARK_HOME=$spark_install_directory/$spark_version-bin-hadoop$hadoop_version
 ZEPPELIN_INSTALL_DIRECTORY=/usr/local
 ZEPPELIN_DOWNLOAD_URL=http://mirrors.estointernet.in/apache/zeppelin
 ZEPPELIN_HOME=$ZEPPELIN_INSTALL_DIRECTORY/$ZEPPELIN_VERSION-bin-all
+SPARK_CASSANDRA_CONNECTOR_PATH=/root/spark-cassandra-connector-assembly-2.4.1-16-gc94f154.jar
 
 # Download zeppelin if it doesn't exists
 ls /root/$ZEPPELIN_VERSION-bin-all.tgz
@@ -37,6 +38,7 @@ cp $ZEPPELIN_HOME/conf/zeppelin-env.sh.template $ZEPPELIN_HOME/conf/zeppelin-env
 chmod 750 $ZEPPELIN_HOME/conf/zeppelin-env.sh
 echo "export MASTER=$SPARK_URL" >> $ZEPPELIN_HOME/conf/zeppelin-env.sh
 echo "export SPARK_HOME=$SPARK_HOME" >> $ZEPPELIN_HOME/conf/zeppelin-env.sh
+echo "export SPARK_SUBMIT_OPTIONS=\"--jars $SPARK_CASSANDRA_CONNECTOR_PATH\"" >> $ZEPPELIN_HOME/conf/zeppelin-env.sh
 
 # Create logs directory for storing all zeppelin logs
 # Create run directory for storing the process IDs
