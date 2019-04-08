@@ -67,7 +67,7 @@
 
 #IP address of machine where cassandra needs to be installed
 [cassandra-node]
-15.213.95.216
+15.213.95.217
 
 #IP address of the spark slaves that needs to be added to the existing cluster
 [scale-nodes]
