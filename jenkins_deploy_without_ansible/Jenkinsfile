@@ -4,7 +4,7 @@
 
 // Slave IP address
 def IP_ADDRS = ['slave1':'15.213.95.217','slave2':'15.213.95.218']
-def SPARK_MASTER_IP = 15.213.95.216
+def SPARK_MASTER_IP = '15.213.95.216'
 def SPARK_MASTER_URL= "spark://${SPARK_MASTER_IP}:7077"
 def SPARK_WEB_UI_PORT = 9092
 
