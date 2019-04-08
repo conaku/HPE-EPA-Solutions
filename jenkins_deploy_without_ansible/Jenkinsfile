@@ -21,9 +21,17 @@ def transfer_artifacts(IP_ADDRS){
 keys = IP_ADDRS.keySet();
 for(String key in keys){
 def ip = IP_ADDRS.get(key);
+sh '''
+su - root << EOF
 sh "scp -r /var/lib/jenkins/workspace/Deployment_scripts/jenkins_deploy_without_ansible ${ip}:/root/scripts"
+EOF
+'''
      }
+su '''
+su - root << EOF
 sh "scp -r /var/lib/jenkins/workspace/Deployment_scripts/jenkins_deploy_without_ansible ${SPARK_MASTER_IP}:/root/scripts"
+EOF
+'''
 }
 
 pipeline {
