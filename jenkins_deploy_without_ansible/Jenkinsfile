@@ -29,7 +29,7 @@ pipeline {
             sh 'git clone https://github.com/conaku/HPE-EPA-Solutions.git  /root/scripts'
             sh 'touch /root/scripts/slaves'
             create_slaves_file(IP_ADDRS)  
-                 sh "sh /root/scripts/jenkins_deploy_without_ansible/spark_master_configure.sh ${SPARK_MASTER_IP} ${SPARK_WEB_UI_PORT}"
+            sh "sh /root/scripts/jenkins_deploy_without_ansible/spark_master_configure.sh ${SPARK_MASTER_IP} ${SPARK_WEB_UI_PORT}"
             sh 'rm -rf /root/scripts/slaves'
             }
         }
