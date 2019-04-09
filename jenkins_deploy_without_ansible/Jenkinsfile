@@ -100,7 +100,7 @@ pipeline {
         // This stage will install Cassandra DB on the node labeled spark_master in Jenkins master and takes the 
         // corresponding IP address as input
         stage('Insatll Cassandra DB'){
-            agent{label 'spark_master'}
+            agent{label 'spark_slave1'}
             steps{
                  sh "sh /root/scripts/jenkins_deploy_without_ansible/cassandra_install.sh ${SPARK_MASTER_IP}"
             }
