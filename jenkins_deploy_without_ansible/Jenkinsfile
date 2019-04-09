@@ -28,7 +28,7 @@ scp -r /var/lib/jenkins/workspace/Deployment_scripts ${ip}:/root/scripts
 EOF
 """
      }
-su """
+sh """
 su - root << EOF
 root
 scp -r /var/lib/jenkins/workspace/Deployment_scripts ${SPARK_MASTER_IP}:/root/scripts
