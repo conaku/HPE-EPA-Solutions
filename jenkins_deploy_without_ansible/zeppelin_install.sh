@@ -46,5 +46,8 @@ mkdir $ZEPPELIN_HOME/logs
 mkdir $ZEPPELIN_HOME/run
 
 # start the zeppelin daemon
-$ZEPPELIN_HOME/bin/zeppelin-daemon.sh start &
+su - root << EOF
+root
+$ZEPPELIN_HOME/bin/zeppelin-daemon.sh start
+EOF
 
